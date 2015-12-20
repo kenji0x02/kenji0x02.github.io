@@ -1,6 +1,8 @@
 $(function(){
   "use strict";
 
+  var HEADER_TAG_PREFIX = 'multi_fan_indent_';
+
   function getHeaderFontSize(headerNumber) {
     return $(headerNumber + ":header").css('fontSize').replace("px", "") - 0;
   }
@@ -60,12 +62,50 @@ $(function(){
       var radiusRatio = [1, 0.66, 0.33];
       var radius = Math.round(iconHalfSize * radiusRatio[index]);
       // 100%の円
-      renderFan(radius, center, 100, "#999", canvas);
+      renderFan(radius, center, 100, "#fff", canvas);
       // 扇型
-      renderFan(radius, center, el, "#555", canvas);
+      renderFan(radius, center, el, "#59bb0c", canvas);
     });
   }
 
+  function createID() {
+    var h1Object = $("h1:header");
+    var h2Object = $("h2:header");
+    var h3Object = $("h3:header");
+    var hObject = $(":header");
+
+    var h1TagNumber = 0;
+    var h2TagNumber = 0;
+    var h3TagNumber = 0;
+
+    var initialTag = {1: 0, 2: 0, 3: 0};
+    var tag = [];
+
+    $.each(hObject, function(index, value) {
+      var headers = $.extend(true, {}, initialTag);
+      if(index > 0) {
+        headers = $.extend(true, {}, tag[index - 1]);
+      }
+
+      var headerNumber = value.tagName.replace("H", "") - 0;
+
+      // count up
+      headers[headerNumber] += 1;
+
+      // reset
+      [1, 2, 3].forEach(function(el) {
+        if(el > headerNumber) {
+          headers[el] = 0;
+        }
+      });
+
+      // todo:規格化
+
+      tag.push(headers);
+    });
+  }
+
+  createID();
   renderMultiFanIndent("multi_fan_indent_100_0_0");
   renderMultiFanIndent("multi_fan_indent_100_33_0");
   renderMultiFanIndent("multi_fan_indent_100_33_50");
