@@ -1,0 +1,16 @@
+h1, h2, h3 {
+  /* headerのdisplayプロパティはデフォルトでblockなので改行されてしまう */
+  /* display: inline; */
+  /* float: left; */
+}
+.multi-fan-index {
+  /* headerのdisplayプロパティはデフォルトでblockなので改行されてしまう */
+  display: inline;
+  float: left;
+  /* width: 100%; */
+  /* height: 100%; */
+}
+#multi-fan-index-1 {
+  /* width: 1px; */
+  /* height: 1px; */
+}
