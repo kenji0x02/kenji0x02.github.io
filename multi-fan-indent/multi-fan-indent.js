@@ -1,7 +1,8 @@
-$(function(){
+var MultiFanIndent = (function($){
   "use strict";
 
   var HEADER_TAG_PREFIX = 'multi_fan_indent_';
+  var HEADER_TAG_NUMBERS = [1 ,2, 3];
 
   function getHeaderFontSize(headerNumber) {
     return $(headerNumber + ":header").css('fontSize').replace("px", "") - 0;
@@ -69,18 +70,12 @@ $(function(){
   }
 
   function createID() {
-    var h1Object = $("h1:header");
-    var h2Object = $("h2:header");
-    var h3Object = $("h3:header");
     var hObject = $(":header");
-
-    var h1TagNumber = 0;
-    var h2TagNumber = 0;
-    var h3TagNumber = 0;
 
     var initialTag = {1: 0, 2: 0, 3: 0};
     var tag = [];
 
+    // 連番に落とし込む
     $.each(hObject, function(index, value) {
       var headers = $.extend(true, {}, initialTag);
       if(index > 0) {
@@ -89,24 +84,82 @@ $(function(){
 
       var headerNumber = value.tagName.replace("H", "") - 0;
 
+      // set tagNumber
+      headers['headerNumber'] = headerNumber;
+
       // count up
       headers[headerNumber] += 1;
 
       // reset
-      [1, 2, 3].forEach(function(el) {
+      HEADER_TAG_NUMBERS.forEach(function(el) {
         if(el > headerNumber) {
           headers[el] = 0;
         }
       });
-
-      // todo:規格化
-
       tag.push(headers);
+    });
+
+    // 進捗率に変換
+    for(var i = 1; i < tag.length; i++) {
+      // ヘッダ階層が浅くなった時(例: h3からh2へ移った時)
+      if(tag[i]['headerNumber'] < tag[i-1]['headerNumber']) {
+        var normalizeHeder = HEADER_TAG_NUMBERS.filter(function(el) {
+          return (el > tag[i]['headerNumber']);
+        });
+
+        normalizeHeder.forEach(function(el, index, array) {
+          var max = tag[i-1][el];
+          for(var j = i - 1; j > 0; j--) {
+            if(tag[j][el] == 0) {
+              break;
+            }
+            tag[j][el] = Math.round(tag[j][el] / max * 100);
+          }
+        });
+      }
+      // ラストのとき
+      // この時は全部の要素について規格化しちゃえばいい
+      if(i == (tag.length - 1)) {
+        HEADER_TAG_NUMBERS.forEach(function(el, index, array) {
+          var max = tag[i][el];
+          for(var j = i; j >= 0; j--) {
+            if(tag[j][el] == 0) {
+              break;
+            }
+            tag[j][el] = Math.round(tag[j][el] / max * 100);
+          }
+        });
+      }
+    }
+
+    // IDに変換(_で結合)
+    return tag.map(function(el, index, array) {
+      return HEADER_TAG_PREFIX + HEADER_TAG_NUMBERS.map(function(e) {return el[e];}).join('_');
     });
   }
 
-  createID();
-  renderMultiFanIndent("multi_fan_indent_100_0_0");
-  renderMultiFanIndent("multi_fan_indent_100_33_0");
-  renderMultiFanIndent("multi_fan_indent_100_33_50");
-});
+  // ヘッダの先頭にcanvasを挿入
+  function appendCanvas(headerIDs) {
+    var hObject = $(":header");
+    $.each(hObject, function(index, value) {
+      $(value).wrap('<div></div>');
+      var canvasHTML = '<div style="float:left;"><canvas id="' + headerIDs[index] + '"></div>';
+      $(value).before(canvasHTML);
+    });
+  }
+
+  function appendMultiFanIndent() {
+    var headerIDs = createID();
+    appendCanvas(headerIDs);
+    headerIDs.forEach(function(el) {
+      renderMultiFanIndent(el);
+    });
+  }
+
+  // べた書きのHTMLを書き換えるために読み込み時にも実行
+  appendMultiFanIndent;
+
+  // marked等利用してmarkdownを読み込む時のためにエクスポート
+  return appendMultiFanIndent;
+
+})(jQuery);
