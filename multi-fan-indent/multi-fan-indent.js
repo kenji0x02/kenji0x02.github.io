@@ -4,6 +4,10 @@ var MultiFanIndent = (function($){
   var HEADER_TAG_PREFIX = 'multi_fan_indent_';
   var HEADER_TAG_NUMBERS = [1 ,2, 3];
 
+  var RADIUS_RADIO = $.extend(true, [], HEADER_TAG_NUMBERS).reverse().map(function(el) {
+    return Math.pow(1.0 * el / HEADER_TAG_NUMBERS.length, 1 / 1.8);
+  });
+
   function getHeaderFontSize(headerNumber) {
     return $(headerNumber + ":header").css('fontSize').replace("px", "") - 0;
   }
@@ -60,8 +64,7 @@ var MultiFanIndent = (function($){
 
     // 外側の円から描画していく
     indentArray.forEach(function(el, index, array) {
-      var radiusRatio = [1, 0.66, 0.33];
-      var radius = Math.round(iconHalfSize * radiusRatio[index]);
+      var radius = Math.round(iconHalfSize * RADIUS_RADIO[index]);
       // 100%の円
       renderFan(radius, center, 100, "#fff", canvas);
       // 扇型
