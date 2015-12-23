@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="UTF-8">
     <title>Multi Fan Indexのサンプルページ</title>
@@ -9,59 +9,25 @@
   </head>
   <body>
     <div class="container">
-      <div class="row">
-        <div class="col-xs-12">
-          <h1>Multi Fan Indent</h1>
-          <p>パラグラフを視覚化することで、スマートフォンでmarkdownを読む時に進捗率を直感的に把握するJavaScriptモジュールです。</p>
-          <h2>概要</h2>
-          <h3>課題</h3>
-          <p>Markdownではヘッダーのインデントの深さは、ヘッダーのフォントサイズで表現されています。
-          たとえば、bootstrapではh1はxxpx、h2はxxpx、h3はxxpxに設定されています。
-          これらの異なる階層のヘッダーが並んでいた場合はその相対的な比較によりインデントの深さをおおよそ推測することができます。
-          しかし、ページ内にヘッダーが一つしか表示されていない場合では、そのヘッダの階層がどの程度の深さなのかを知る術がありません。
-          たとえば、12pxのヘッダーがh1なのかh2なのかh3なのかはわかりません。
-          それを決めているのはcssなのですから。
-          ヘッダーの深さは全体の分割方法と関係しているため、通常は、頭の中でインデントの深さをバッファしながら読んでいかなければなりません。
-          </p>
-          <p>
-          また、残りのパラグラフがどの程度残っているかを知る術がありません。
-          </p>
-          <h3>従来の解決策</h3>
-          <p>こういった問題を解決するために、ヘッダー部に通し番号、例えば、1-1、1-2-1といった番号をつけることがあります。
-          しかし、こういった数字は管理が困難であり、ヘッダーの並びが変わった場合にいちいち変更しなければなりません。
-          かつ、スマホの縦長の画面ではスペースをとってしまい、階層が深くなるほどたくさんの数字を必要としてしまいます。
-          </p>
-          <p>
-          そもそも、私たちが欲しい情報は、連番ではなく、その進捗率(全体に対してどの程度進んでいるのか)なのです。
-          </p>
-          <h3>今回提案する方法</h3>
-          <p>
-          そこで、こういった問題を解決するために、ドーナツチャートを多階層で表示するアイコンを用いてヘッダーのインデントの深さを表現することを試みてみました。
-          ドーナツチャートの階層はインデントの深さを、ドーナツチャートの進捗は同一インデントの進捗を意味しています。
-          </p>
-          <h2>デモ</h2>
-          <p>ここまでくると、もう説明は不要かと思いますが、
-          このページの各ヘッダの左に表示されている扇型のアイコンがMulti Fan Indentのデモになります。</p>
-          <p>初めてご覧になった方は各アイコンの意味がわかりにくかと思いますので、従来の連番との対比を表にまとめておきます。</p>
-          <h2>Requirement</h2>
-          jQueryが必要です。
-          <h2>インストール</h2>
-          multi-fan-indent.jsとmulti-fan-indent.cssをヘッダーに追加してください。
-          <h2>応用例</h2>
-          <p>すでに勘のいい方はお気付きのように、こういった表示方法が有用なのはウェブに限定されていません。
-          階層構造を持ったオブジェクト全般に適用することが可能です。
-          そして、画面表示サイズが限られている、あるいは、進捗率が大きな意味を持つ対象に適用すると効果が大きいです。
-          パワーポイント、電子書籍などが好例です。
-          パワーポイントでは、進捗率を表示するために連番の数字を用いることが一般的ですが、上で述べたのと同じ課題を抱えています。
-          電子書籍については、従来は本の厚さに対する現在の位置により進捗率を把握していましたが、定期的にタイトルにアイコンを挿入することで進捗率の把握が簡単になるかもしれません。</p>
-          <h2>Licence</h2>
-          <p>MIT</p>
-          <h2>Auther</h2>
-          <a href="https://github.com/kenji0x02">kenji0x02</a>
-        </div>
-      </div>
+      <div id="markdown_content" src="https://raw.githubusercontent.com/kenji0x02/multi-fan-indent/master/sample_page.md"></div>
     </div>
   </body>
   <script src="https://code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
   <script src="https://cdn.rawgit.com/kenji0x02/multi-fan-indent/master/multi-fan-indent.js" type="text/javascript"></script>
+  <script src="https://cdn.rawgit.com/chjj/marked/master/marked.min.js" type="text/javascript"></script>
+  <script>
+    $(document).ready(function(){
+      var target = $("#markdown_content");
+
+      $.ajax({
+        url: target[0].attributes["src"].value,
+      }).done(function(data){
+        target.append(marked(data));
+      }).fail(function(data){
+        target.append("This content failed to load.");
+      }).always(function(data){
+        MultiFanIndent();
+      });
+    });
+  </script>
 </html>
