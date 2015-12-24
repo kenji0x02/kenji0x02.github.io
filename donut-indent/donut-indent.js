@@ -1,7 +1,7 @@
-var MultiFanIndent = (function($){
+var DonutIndent = (function($){
   "use strict";
 
-  var HEADER_TAG_PREFIX = 'multi_fan_indent_';
+  var HEADER_TAG_PREFIX = 'donut_indent_';
   var HEADER_TAG_NUMBERS = [1 ,2, 3];
 
   var RADIUS_RADIO = $.extend(true, [], HEADER_TAG_NUMBERS).reverse().map(function(el) {
@@ -47,8 +47,8 @@ var MultiFanIndent = (function($){
     ctx.fill();
   }
 
-  function renderMultiFanIndent(canvasID) {
-    var indentArray = canvasID.replace("multi_fan_indent_", "").split("_").map(function(el){
+  function renderDonutIndent(canvasID) {
+    var indentArray = canvasID.replace("donut_indent_", "").split("_").map(function(el){
       return el - 0;
     });
     var headerTag = "h" + indentArray.filter(function(el, index, array){return (el != 0);}).length;
@@ -160,18 +160,18 @@ var MultiFanIndent = (function($){
     });
   }
 
-  function appendMultiFanIndent() {
+  function appendDonutIndent() {
     var headerIDs = createID();
     appendCanvas(headerIDs);
     headerIDs.forEach(function(el) {
-      renderMultiFanIndent(el);
+      renderDonutIndent(el);
     });
   }
 
   // べた書きのHTMLを書き換えるために読み込み時にも実行
-  appendMultiFanIndent;
+  appendDonutIndent;
 
   // marked等利用してmarkdownを読み込む時のためにエクスポート
-  return appendMultiFanIndent;
+  return appendDonutIndent;
 
 })(jQuery);
