@@ -68,7 +68,13 @@ var MultiFanIndent = (function($){
       // 100%の円
       renderFan(radius - 1, center, 100, "#fff", canvas);
       // 扇型
-      renderFan(radius, center, el, "#59bb0c", canvas);
+      var color = "#59bb0c";
+      if(index == 1) {
+        color = "#40A200";
+      } else if (index == 2) {
+        color = "#268800";
+      }
+      renderFan(radius, center, el, color, canvas);
     });
   }
 
