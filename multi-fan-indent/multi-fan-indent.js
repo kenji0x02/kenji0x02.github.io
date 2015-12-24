@@ -66,7 +66,7 @@ var MultiFanIndent = (function($){
     indentArray.forEach(function(el, index, array) {
       var radius = Math.round(iconHalfSize * RADIUS_RADIO[index]);
       // 100%の円
-      renderFan(radius, center, 100, "#fff", canvas);
+      renderFan(radius - 1, center, 100, "#fff", canvas);
       // 扇型
       renderFan(radius, center, el, "#59bb0c", canvas);
     });
@@ -75,7 +75,10 @@ var MultiFanIndent = (function($){
   function createID() {
     var hObject = $(":header");
 
-    var initialTag = {1: 0, 2: 0, 3: 0};
+    var initialTag = {};
+    HEADER_TAG_NUMBERS.forEach(function(el) {
+      initialTag[el] = 0;
+    });
     var tag = [];
 
     // 連番に落とし込む
