@@ -17,15 +17,15 @@ var MultiFanIndent = (function($){
   }
 
   function calcIconHalfSize(fontSize) {
-    return Math.round(fontSize * 0.4);
+    return Math.round(fontSize * 0.45);
   }
 
   function calcMarginTop(lineHeight, fontSize) {
-    return Math.round(fontSize * 0.1 + (lineHeight - fontSize) * 0.5);
+    return Math.round(fontSize * 0.05 + (lineHeight - fontSize) * 0.5);
   }
 
   function calcCenter(fontSize) {
-    return Math.round(fontSize * 0.4);
+    return Math.round(fontSize * 0.45);
   }
 
   function initializeCanvasSize(iconSize, marginTop, canvas) {
