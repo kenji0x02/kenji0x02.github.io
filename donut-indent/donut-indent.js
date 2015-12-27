@@ -1,12 +1,13 @@
-var DonutIndent = (function($){
+/**
+ * donut-indent
+ * Copyright (c) 2015, kenji0x02. (MIT Licensed)
+ * https://github.com/kenji0x02/donut-indent
+ */
+
+(function($){
   "use strict";
 
   var HEADER_TAG_PREFIX = 'donut_indent_';
-  var HEADER_TAG_NUMBERS = [1 ,2, 3];
-
-  var RADIUS_RADIO = $.extend(true, [], HEADER_TAG_NUMBERS).reverse().map(function(el) {
-    return Math.pow(1.0 * el / HEADER_TAG_NUMBERS.length, 1 / 1.8);
-  });
 
   function getHeaderFontSize(headerNumber) {
     return $(headerNumber + ":header").css('fontSize').replace("px", "") - 0;
@@ -35,7 +36,7 @@ var DonutIndent = (function($){
     canvas.height = iconSize;
   }
 
-  function renderFan(redius, center, percentage, colorCode, canvas) {
+  function renderDonut(redius, center, percentage, colorCode, canvas) {
     var ctx = canvas.getContext("2d");
     var ninetyDegree = 1.5707963267948966; // 90*Math.PI/180;
     var startRadian = -ninetyDegree;
@@ -64,9 +65,9 @@ var DonutIndent = (function($){
 
     // 外側の円から描画していく
     indentArray.forEach(function(el, index, array) {
-      var radius = Math.round(iconHalfSize * RADIUS_RADIO[index]);
+      var radius = Math.round(iconHalfSize * DonutIndent.radiusRatio[index]);
       // 100%の円
-      renderFan(radius - 1, center, 100, "#fff", canvas);
+      renderDonut(radius - 1, center, 100, "#fff", canvas);
       // 扇型
       var color = "#59bb0c";
       if(index == 1) {
@@ -74,24 +75,23 @@ var DonutIndent = (function($){
       } else if (index == 2) {
         color = "#268800";
       }
-      renderFan(radius, center, el, color, canvas);
+      renderDonut(radius, center, el, color, canvas);
     });
   }
 
-  function createID() {
-    var hObject = $(":header");
-
+  // hタグを連番に変換
+  function createSequentilNo(hObject) {
     var initialTag = {};
-    HEADER_TAG_NUMBERS.forEach(function(el) {
+    DonutIndent.headerTagNumbers.forEach(function(el) {
       initialTag[el] = 0;
     });
-    var tag = [];
 
-    // 連番に落とし込む
+    var sequentialNo = [];
+
     $.each(hObject, function(index, value) {
       var headers = $.extend(true, {}, initialTag);
       if(index > 0) {
-        headers = $.extend(true, {}, tag[index - 1]);
+        headers = $.extend(true, {}, sequentialNo[index - 1]);
       }
 
       var headerNumber = value.tagName.replace("H", "") - 0;
@@ -103,56 +103,63 @@ var DonutIndent = (function($){
       headers[headerNumber] += 1;
 
       // reset
-      HEADER_TAG_NUMBERS.forEach(function(el) {
+      DonutIndent.headerTagNumbers.forEach(function(el) {
         if(el > headerNumber) {
           headers[el] = 0;
         }
       });
-      tag.push(headers);
+      sequentialNo.push(headers);
     });
+    return sequentialNo;
+  }
 
+  function createPercentage(sequentialNo) {
     // 進捗率に変換
-    for(var i = 1; i < tag.length; i++) {
+    for(var i = 1; i < sequentialNo.length; i++) {
       // ヘッダ階層が浅くなった時(例: h3からh2へ移った時)
-      if(tag[i]['headerNumber'] < tag[i-1]['headerNumber']) {
-        var normalizeHeder = HEADER_TAG_NUMBERS.filter(function(el) {
-          return (el > tag[i]['headerNumber']);
+      if(sequentialNo[i]['headerNumber'] < sequentialNo[i-1]['headerNumber']) {
+        var normalizeHeder = DonutIndent.headerTagNumbers.filter(function(el) {
+          return (el > sequentialNo[i]['headerNumber']);
         });
 
         normalizeHeder.forEach(function(el, index, array) {
-          var max = tag[i-1][el];
+          var max = sequentialNo[i-1][el];
           for(var j = i - 1; j > 0; j--) {
-            if(tag[j][el] == 0) {
+            if(sequentialNo[j][el] == 0) {
               break;
             }
-            tag[j][el] = Math.round(tag[j][el] / max * 100);
+            sequentialNo[j][el] = Math.round(sequentialNo[j][el] / max * 100);
           }
         });
       }
       // ラストのとき
       // この時は全部の要素について規格化しちゃえばいい
-      if(i == (tag.length - 1)) {
-        HEADER_TAG_NUMBERS.forEach(function(el, index, array) {
-          var max = tag[i][el];
+      if(i == (sequentialNo.length - 1)) {
+        DonutIndent.headerTagNumbers.forEach(function(el, index, array) {
+          var max = sequentialNo[i][el];
           for(var j = i; j >= 0; j--) {
-            if(tag[j][el] == 0) {
+            if(sequentialNo[j][el] == 0) {
               break;
             }
-            tag[j][el] = Math.round(tag[j][el] / max * 100);
+            sequentialNo[j][el] = Math.round(sequentialNo[j][el] / max * 100);
           }
         });
       }
     }
+    return sequentialNo;
+  }
+
+  function createID(hObject) {
+    var tag = createPercentage(createSequentilNo(hObject));
 
     // IDに変換(_で結合)
     return tag.map(function(el, index, array) {
-      return HEADER_TAG_PREFIX + HEADER_TAG_NUMBERS.map(function(e) {return el[e];}).join('_');
+      return HEADER_TAG_PREFIX + DonutIndent.headerTagNumbers.map(function(e) {return el[e];}).join('_');
     });
   }
 
   // ヘッダの先頭にcanvasを挿入
-  function appendCanvas(headerIDs) {
-    var hObject = $(":header");
+  function appendCanvas(hObject, headerIDs) {
     $.each(hObject, function(index, value) {
       $(value).wrap('<div></div>');
       var canvasHTML = '<div style="float:left;"><canvas id="' + headerIDs[index] + '"></div>';
@@ -161,17 +168,41 @@ var DonutIndent = (function($){
   }
 
   function appendDonutIndent() {
-    var headerIDs = createID();
-    appendCanvas(headerIDs);
+    var hObject = $(":header");
+    var headerIDs = createID(hObject);
+    appendCanvas(hObject,headerIDs);
     headerIDs.forEach(function(el) {
       renderDonutIndent(el);
     });
   }
 
-  // べた書きのHTMLを書き換えるために読み込み時にも実行
-  appendDonutIndent;
+  var DonutIndent = {};
 
-  // marked等利用してmarkdownを読み込む時のためにエクスポート
-  return appendDonutIndent;
+  DonutIndent = {
+    defaults: {
+      indentDepth: 3,
+      color: "#59bb0c",
+      gammmaValue: 1.8
+    },
+
+    settings: $.extend(true, {}, DonutIndent.defaults),
+
+    init: function(options) {
+      DonutIndent.settings = $.extend(DonutIndent.defaults, options);
+      DonutIndent.headerTagNumbers = Array.apply(null, Array(DonutIndent.settings.indentDepth)).map(function (_, i) {return i+1;});
+      DonutIndent.radiusRatio = $.extend(true, [], DonutIndent.headerTagNumbers).reverse().map(function(el) {
+        return Math.pow(1.0 * el / DonutIndent.headerTagNumbers.length, 1 / DonutIndent.settings.gammmaValue);
+      });
+    }
+  };
+
+  // export
+  $.donutIndent = function(options){
+    DonutIndent.init(options);
+    appendDonutIndent();
+  }
 
 })(jQuery);
+
+// べた書きのHTMLを書き換えるために読み込み時にも実行
+$.donutIndent();
