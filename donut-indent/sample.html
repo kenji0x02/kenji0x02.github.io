@@ -5,6 +5,7 @@
     <title>Donut Indexのサンプルページ</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="./bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.0.0/styles/github.min.css">
   </head>
   <body>
     <div class="container">
@@ -15,7 +16,8 @@
   </body>
   <script src="https://code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
   <script src="./marked.min.js" type="text/javascript"></script>
-  <script src="./donut-indent.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.0.0/highlight.min.js"></script>
+  <script src="./donut-indent.min.js" type="text/javascript"></script>
   <script>
     $(document).ready(function(){
       var target = $("#markdown_content");
@@ -27,7 +29,15 @@
       }).fail(function(data){
         target.append("This content failed to load.");
       }).always(function(data){
-        $.donutIndent({indentDepth: 3});
+        // for donut-indent.js
+        $.donutIndent({
+          indentDepth: 3,
+          color: "#59bb0c"
+        });
+        // for highlight.js
+        $('pre code').each(function(i, block) {
+          hljs.highlightBlock(block);
+        });
       });
     });
   </script>
