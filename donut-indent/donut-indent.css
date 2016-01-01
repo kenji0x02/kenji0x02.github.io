@@ -1,0 +1,23 @@
+#modal-content {
+  width:50%;
+  margin:1.5em auto 0;
+  padding:10px 20px;
+  /* border:2px solid #aaa; */
+  /* background:#fff; */
+  color: #fff;
+  z-index:2;
+  position:fixed;
+  display:none;
+}
+
+#modal-overlay{
+  z-index:1;
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  /* スマホのナビバー対応 */
+  height:120%;
+  background-color:rgba(0,0,0,0.75);
+}
