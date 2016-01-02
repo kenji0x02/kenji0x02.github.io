@@ -170,6 +170,10 @@
     headerIDs.forEach(function(el) {
       renderDonutIndent(el);
     });
+    var overlayContent = require('./overlay-content.js');
+    var content = overlayContent(hObject, DonutIndent.settings.indentDepth);
+    $('#modal-content').children().remove();
+    $('#modal-content').append(content);
   }
 
   var DonutIndent = {};
