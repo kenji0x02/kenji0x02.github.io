@@ -83,12 +83,9 @@ function initializeOverlayContent() {
 
 $(document).on('click',".donut-indent", function() {
   var id = "#" + toOverlayAnchorID($(this).children("canvas").attr("id"));
-  console.log(id);
-  console.log("clicked");
   $(id).css("font-weight", "bold");
   $("#modal-wrap, .overlay_anchor").on('click', function() {
     $(id).css("font-weight", "");
-    console.log(id);
   });
 });
 

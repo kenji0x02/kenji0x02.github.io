@@ -166,7 +166,7 @@
   }
 
   function appendDonutIndent() {
-    var hObject = $(":header");
+    var hObject = $(":header").filter(function(index, el){return (utils.headingNumber(el) <= DonutIndent.settings.indentDepth)});
     var headerIDs = createID(hObject);
     appendCanvas(hObject,headerIDs);
     headerIDs.forEach(function(el) {
