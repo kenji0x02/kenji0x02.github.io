@@ -36,7 +36,8 @@ function ulElement(hObject, headerIDs) {
 }
 
 function listElement(text, id) {
-  return '<li>' + '<a class="overlay_anchor" href=#' + id + '>' + text + '</a>' + '</li>'
+  var anchorID = toOverlayAnchorID(id);
+  return '<li>' + '<a class="overlay_anchor" href="#' + id + '" id="' + anchorID + '">' + text + '</a>' + '</li>'
 }
 
 // header numberが減った時は<ul>を増やす
@@ -78,6 +79,21 @@ function initializeOverlayContent() {
   } else {
     $('body').append('<div id="modal-content"></div>');
   }
+}
+
+$(document).on('click',".donut-indent", function() {
+  var id = "#" + toOverlayAnchorID($(this).children("canvas").attr("id"));
+  console.log(id);
+  console.log("clicked");
+  $(id).css("font-weight", "bold");
+  $("#modal-wrap, .overlay_anchor").on('click', function() {
+    $(id).css("font-weight", "");
+    console.log(id);
+  });
+});
+
+function toOverlayAnchorID(id) {
+  return id + "_overlay";
 }
 
 module.exports = {

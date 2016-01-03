@@ -38,7 +38,7 @@ $(document).on('click',".donut-indent", function() {
   //[$modal-content]をフェードインさせる
   $("#modal-content").fadeIn("slow");
 
-  $("#modal-wrap, #modal-close, .overlay_anchor").off().on('click', function() {
+  $("#modal-wrap, .overlay_anchor").off().on('click', function() {
     //[#modal-overlay]と[#modal-close]をフェードアウトする
     $("#modal-content,#modal-overlay").fadeOut("slow",function() {
       // html、bodyの固定解除

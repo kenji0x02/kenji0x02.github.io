@@ -175,7 +175,7 @@
     var overlayContent = require('./overlay-content.js');
     var content = overlayContent.create(hObject, headerIDs);
     overlayContent.initialize();
-    $('#modal-content').prepend(content);
+    $('#modal-content').append(content);
   }
 
   var DonutIndent = {};
