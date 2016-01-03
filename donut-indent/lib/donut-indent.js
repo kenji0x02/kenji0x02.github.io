@@ -8,6 +8,8 @@
   "use strict";
 
   var modal = require('./modal.js');
+  var utils = require('./utils.js');
+
   var DARKEN_PERCENTAGE_DIFF = 10;
   var HEADER_TAG_PREFIX = 'donut_indent_';
 
@@ -90,7 +92,7 @@
         headers = $.extend(true, {}, sequentialNo[index - 1]);
       }
 
-      var headerNumber = value.tagName.replace("H", "") - 0;
+      var headerNumber = utils.headingNumber(value);
 
       // set tagNumber
       headers['headerNumber'] = headerNumber;
@@ -171,9 +173,9 @@
       renderDonutIndent(el);
     });
     var overlayContent = require('./overlay-content.js');
-    var content = overlayContent(hObject, DonutIndent.settings.indentDepth);
-    $('#modal-content').children().remove();
-    $('#modal-content').append(content);
+    var content = overlayContent.create(hObject, headerIDs);
+    overlayContent.initialize();
+    $('#modal-content').prepend(content);
   }
 
   var DonutIndent = {};
@@ -204,7 +206,6 @@
   $.donutIndent = function(options){
     DonutIndent.init(options);
     appendDonutIndent();
-    // var modal = require('./modal.js');
   }
 
 })(jQuery);
